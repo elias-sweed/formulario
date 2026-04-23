@@ -8,6 +8,9 @@ import { AdminPanel } from './components/AdminPanel';
 import { supabase } from './lib/supabase'; 
 import Swal from 'sweetalert2';
 
+// 1. IMPORTACIÓN DEL FONDO ANIMADO
+import PrismaticBurst from './components/PrismaticBurst'; 
+
 export default function App() {
   const [teacherData, setTeacherData] = useState<TeacherData>({
     names: '',
@@ -53,91 +56,75 @@ export default function App() {
   );
 
   // 🚀 Función para enviar a Supabase
-const sendToSupabase = async (finalAnswers: Record<string, string>) => {
-  try {
-    // 1. Verificamos que los datos no estén vacíos antes de enviar
-    const payload = {
-      teacher_names: teacherData.names,
-      teacher_lastnames: teacherData.lastNames,
-      ie_name: teacherData.ieName,
-      level: teacherData.level,
-      answers: finalAnswers,
-      score_total: 0 // Columna que definiste en el SQL
-    };
-
-    console.log("Intentando guardar:", payload);
-
-    const { data, error } = await supabase
-      .from('evaluations')
-      .insert([payload])
-      .select();
-
-    if (error) {
-      // Si hay un error de Supabase, lo veremos aquí detallado
-      console.error("❌ Error de Supabase:", error.message);
-      console.error("Código de error:", error.code);
-      throw error;
-    }
-
-    console.log("✅ Guardado con éxito en Supabase:", data);
-  } catch (err) {
-    console.error("❌ Error crítico en la función sendToSupabase:", err);
-    throw err; // Re-lanzar para que SweetAlert lo capture
-  }
-};
-
-const handleNextQuestion = async () => {
-  if (currentQuestionIndex < totalQuestionsInCategory - 1) {
-    setCurrentQuestionIndex(currentQuestionIndex + 1);
-  } else if (currentCategoryIndex < evaluationData.length - 1) {
-    setCurrentCategoryIndex(currentCategoryIndex + 1);
-    setCurrentQuestionIndex(0);
-  } else {
-    // Mostramos un mensaje de "Guardando..." mientras se sube a Supabase
-    Swal.fire({
-      title: 'Enviando respuestas...',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
-
+  const sendToSupabase = async (finalAnswers: Record<string, string>) => {
     try {
-      // 2. Enviar a Supabase
-      await sendToSupabase(answers);
+      const payload = {
+        teacher_names: teacherData.names,
+        teacher_lastnames: teacherData.lastNames,
+        ie_name: teacherData.ieName,
+        level: teacherData.level,
+        answers: finalAnswers,
+        score_total: 0 
+      };
 
-      // 3. QUITAMOS la descarga de Excel (Línea eliminada)
-      // exportToExcel(teacherData, evaluationData, answers); 
+      const { data, error } = await supabase
+        .from('evaluations')
+        .insert([payload])
+        .select();
 
-      // 4. Mensaje de éxito estilizado
-      await Swal.fire({
-        icon: 'success',
-        title: '¡Cuestionario Respondido!',
-        text: 'Muchas gracias por su participación.',
-        background: '#0f172a', // Color pizarra oscuro que combina con tu diseño
-        color: '#f8fafc',
-        confirmButtonColor: '#0891b2', // Color cyan-600
-        confirmButtonText: 'Finalizar',
-        customClass: {
-          popup: 'rounded-3xl border border-slate-700'
+      if (error) throw error;
+      console.log("✅ Guardado con éxito:", data);
+    } catch (err) {
+      console.error("❌ Error en sendToSupabase:", err);
+      throw err;
+    }
+  };
+
+  const handleNextQuestion = async () => {
+    if (currentQuestionIndex < totalQuestionsInCategory - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else if (currentCategoryIndex < evaluationData.length - 1) {
+      setCurrentCategoryIndex(currentCategoryIndex + 1);
+      setCurrentQuestionIndex(0);
+    } else {
+      Swal.fire({
+        title: 'Enviando respuestas...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
         }
       });
 
-      // 5. Reset y redirección
-      resetApp();
-      window.location.href = '/';
+      try {
+        await sendToSupabase(answers);
 
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error al enviar',
-        text: 'Hubo un problema con la conexión.',
-        background: '#0f172a',
-        color: '#f8fafc'
-      });
+        await Swal.fire({
+          icon: 'success',
+          title: '¡Cuestionario Respondido!',
+          text: 'Muchas gracias por su participación.',
+          background: '#0f172a',
+          color: '#f8fafc',
+          confirmButtonColor: '#0891b2',
+          confirmButtonText: 'Finalizar',
+          customClass: {
+            popup: 'rounded-3xl border border-slate-700'
+          }
+        });
+
+        resetApp();
+        window.location.href = '/';
+
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al enviar',
+          text: 'Hubo un problema con la conexión.',
+          background: '#0f172a',
+          color: '#f8fafc'
+        });
+      }
     }
-  }
-};
+  };
 
   const resetApp = () => {
     setEvaluationStarted(false);
@@ -153,8 +140,26 @@ const handleNextQuestion = async () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 flex items-center justify-center px-4 font-sans">
-      <div className="max-w-5xl mx-auto w-full">
+    <div className="relative min-h-screen w-full flex items-center justify-center font-sans overflow-x-hidden">
+      
+      {/* 🌌 CAPA DE FONDO ANIMADO (FIJA Detrás de todo) */}
+      <div className="fixed inset-0 z-0 bg-[#020617]">
+<PrismaticBurst
+  animationType="rotate3d"
+  intensity={2}
+  speed={0.5}
+  distort={0.1}
+  paused={false}
+  offset={{ x: 0, y: 0 }}
+  hoverDampness={0.25}
+  rayCount={0}
+  mixBlendMode="lighten"
+  colors={['#A855F7', '#7C3AED', '#6366F1']} 
+/>
+      </div>
+
+      {/* 🖥️ CAPA DE CONTENIDO (Delante del fondo) */}
+      <div className="relative z-10 max-w-5xl mx-auto w-full px-4 py-10">
         <AnimatePresence mode="wait">
           {!evaluationStarted ? (
             <div key="form" className="flex justify-center">
