@@ -148,7 +148,7 @@ export const TeacherForm: React.FC<TeacherFormProps> = ({
           </div>
           <div className="inline-block px-4 py-2 bg-slate-950/50 rounded-xl border border-slate-800 shadow-inner">
             <p className="text-[11px] font-bold text-slate-300 italic">
-              AIP Edward Panduro Villacorta
+              AIP <span className="text-cyan-400">Edward Panduro Villacorta</span>
             </p>
           </div>
         </div>
