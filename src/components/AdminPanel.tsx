@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  Cell, PieChart, Pie 
-} from 'recharts';
+  Cell} from 'recharts';
 import { 
   Users, 
   ClipboardCheck, 
@@ -221,7 +220,7 @@ export const AdminPanel: React.FC = () => {
                         contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #334155' }}
                       />
                       <Bar dataKey="cantidad" radius={[6, 6, 0, 0]}>
-                        {stats?.levelChartData.map((entry, index) => (
+                        {stats?.levelChartData.map((_entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Bar>
