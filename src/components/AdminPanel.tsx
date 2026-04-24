@@ -5,13 +5,12 @@ import {
   Search
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-
-// Importación de sub-componentes de la carpeta admin
 import { AdminStats } from './admin/AdminStats';
 import { AdminCharts } from './admin/AdminCharts';
 import { EvaluationCard } from './admin/EvaluationCard';
 import { DeleteConfirmModal } from './admin/DeleteConfirmModal';
-import Lightning from './admin/Lightning'; // ✅ Importación del nuevo fondo
+import Lightning from './admin/Lightning';
+import { GeneralExportButton } from './GeneralExportButton';
 
 // Interfaces para tipado (Centralizadas)
 export interface FormattedData {
@@ -150,15 +149,22 @@ export const AdminPanel: React.FC = () => {
               <h2 className="text-3xl font-extrabold text-white">Panel de Administración</h2>
               <p className="text-slate-400">Visualiza el impacto y resultados de las evaluaciones docentes.</p>
             </div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-              <input 
-                type="text"
-                placeholder="Buscar docente..."
-                className="bg-slate-900/80 border border-slate-700 rounded-xl py-2 pl-10 pr-4 focus:ring-2 focus:ring-blue-500 outline-none w-full md:w-64 transition-all backdrop-blur-sm"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            
+            <div className="flex items-center gap-3">
+              {/* Buscador (se mantiene igual) */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                <input 
+                  type="text"
+                  placeholder="Buscar docente..."
+                  className="bg-slate-900/80 border border-slate-700 rounded-xl py-2 pl-10 pr-4 focus:ring-2 focus:ring-blue-500 outline-none w-full md:w-64 transition-all backdrop-blur-sm"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              
+              {/* ✅ BOTÓN DE REPORTE GENERAL */}
+              <GeneralExportButton data={data} />
             </div>
           </div>
 
